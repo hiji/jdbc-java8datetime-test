@@ -1,0 +1,47 @@
+CREATE TABLE jdbc_test (
+  id VARCHAR2(20),
+  dt DATE,
+  ts TIMESTAMP,
+  ts_tz TIMESTAMP WITH TIME ZONE,
+  ts_tz2 TIMESTAMP WITH TIME ZONE,
+  ts_ltz TIMESTAMP WITH LOCAL TIME ZONE,
+  constraint pk_jdbc_test primary key( id )
+);
+
+INSERT INTO jdbc_test (id, ts, ts_tz, ts_ltz) VALUES (
+    'hoge',
+    to_timestamp('2005/05/14 12:34:56.123456', 'yyyy/mm/dd hh24:mi:ss.ff'),
+    to_timestamp('2005/05/14 12:34:56.123456', 'yyyy/mm/dd hh24:mi:ss.ff'),
+    to_timestamp('2005/05/14 12:34:56.123456', 'yyyy/mm/dd hh24:mi:ss.ff'));
+
+INSERT INTO jdbc_test (id, dt, ts, ts_tz, ts_tz2, ts_ltz) VALUES (
+  'fuga',
+  to_date('2005-05-14 12:34:56', 'yyyy-mm-dd hh24:mi:ss'),
+  to_timestamp_tz('2005/05/14 12:34:56.789 +09:00', 'yyyy/mm/dd hh24:mi:ss.ff3 tzh:tzm'),
+  to_timestamp_tz('2005/05/14 12:34:56.789 +09:00', 'yyyy/mm/dd hh24:mi:ss.ff3 tzh:tzm'),
+  to_timestamp_tz('2005/05/14 12:34:56.789 +08:00', 'yyyy/mm/dd hh24:mi:ss.ff3 tzh:tzm'),
+  to_timestamp_tz('2005/05/14 12:34:56.789 +09:00', 'yyyy/mm/dd hh24:mi:ss.ff3 tzh:tzm')
+);
+
+SELECT id,
+  to_char(dt, 'yyyy/mm/dd hh24:mi:ss'),
+  to_char(ts, 'yyyy/mm/dd hh24:mi:ss.ff3'),
+  to_char(ts_tz, 'yyyy/mm/dd hh24:mi:ss.ff3 tzr'),
+  to_char(ts_tz2, 'yyyy/mm/dd hh24:mi:ss.ff3 tzr'),
+  to_char(ts_ltz, 'yyyy/mm/dd hh24:mi:ss.ff3 tzr') FROM jdbc_test;
+
+delete from jdbc_test;
+
+drop table jdbc_test;
+
+SELECT sessiontimezone FROM dual;
+ALTER session SET time_zone = 'Asia/Tokyo';
+ALTER session SET time_zone = 'US/Arizona';
+
+SELECT
+  PARAMETER,
+  VALUE
+FROM
+  NLS_DATABASE_PARAMETERS
+WHERE
+  PARAMETER IN ('NLS_CHARACTERSET', 'NLS_NCHAR_CHARACTERSET');
